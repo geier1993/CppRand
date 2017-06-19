@@ -62,11 +62,11 @@ gen.fill<int>(v1,10);
 std::vector<int> v2(10);
 gen.fill<int,std::vector<int> >(v2.begin(),v2.end());
 
-std::vector<int> v3 = gen().randVector<int>(10);
+std::vector<int> v3 = gen.randVector<int>(10);
 
-std::vector<int> v4 = gen().randVector<int,10>();
+std::vector<int> v4 = gen.randVector<int,10>();
 
-std::array<int,10> a3 = gen().randArray<int,10>();
+std::array<int,10> a3 = gen.randArray<int,10>();
 
 
 // Sources
