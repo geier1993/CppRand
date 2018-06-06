@@ -1,0 +1,30 @@
+#ifndef config_h_INCLUDED
+#define config_h_INCLUDED
+
+
+
+const bool USE_SIMDPP   = @USE_SIMDPP@;
+
+#if @USE_SIMDPP@
+#define _USE_SIMDPP
+#endif
+
+#if (defined(__GNUC__) && !defined(__clang__))
+#define __GCC_COMPILER true
+const bool GCC_COMPILER = true;
+#else
+#define __GCC_COMPILER false
+const bool GCC_COMPILER = false;
+#endif
+
+#if defined(__clang__)
+#define __CLANG_COMPILER true
+const bool CLANG_COMPILER = true;
+#else
+#define __CLANG_COMPILER false
+const bool CLANG_COMPILER = false;
+#endif
+
+#endif // config_h_INCLUDED
+
+

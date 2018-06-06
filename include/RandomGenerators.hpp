@@ -1,6 +1,7 @@
 #ifndef RandomGen_hpp_INCLUDED
 #define RandomGen_hpp_INCLUDED
 
+#include "config.h"
 #include <limits>
 #include <type_traits>
 #include <stdint.h>
@@ -12,6 +13,8 @@
 #include "Xorshift1024star.hpp"
 #include "Xorshift128plus.hpp"
 #include "Xoroshiro128plus.hpp"
+#include "Xoshiro256starstar.hpp"
+#include "Xoshiro256plus.hpp"
 
 
 namespace PRNG {
@@ -121,6 +124,63 @@ Xoroshiro128plus xoroshiro128plus() {
 }
 Xoroshiro128plus xoroshiro128plus(uint64_t seed) {
     return RandomGenImplInitiator<Xoroshiro128plus>::get(seed);
+}
+
+
+template<>
+struct RandomGenImplInitiator<Xoshiro256plus> {
+    static inline Xoshiro256plus init(std::array<uint64_t,4> seed) {
+            return Xoshiro256plus(seed);
+        };
+    static inline Xoshiro256plus get(std::array<uint64_t,4> seed) {
+            return RandomGenImplInitiator<Xoshiro256plus>::init(seed);
+        };
+    static inline Xoshiro256plus __splitmixhelper(Splitmix64 sm64) {
+            std::array<uint64_t,4> xorseed;
+            for (unsigned int i=0; i<4;++i) {xorseed[i]=sm64.next();}
+            return Xoshiro256plus(xorseed);
+    }
+    static inline Xoshiro256plus get(uint64_t seed) {
+            return __splitmixhelper(splitmix64(seed));
+        };
+    static inline Xoshiro256plus get() {
+            return __splitmixhelper(splitmix64());
+        };
+};
+Xoshiro256plus xoshiro256plus() {
+    return RandomGenImplInitiator<Xoshiro256plus>::get();
+}
+Xoshiro256plus xoshiro256plus(uint64_t seed) {
+    return RandomGenImplInitiator<Xoshiro256plus>::get(seed);
+}
+
+
+
+template<>
+struct RandomGenImplInitiator<Xoshiro256starstar > {
+    static inline Xoshiro256starstar init(std::array<uint64_t,4> seed) {
+            return Xoshiro256starstar (seed);
+        };
+    static inline Xoshiro256starstar get(std::array<uint64_t,4> seed) {
+            return RandomGenImplInitiator<Xoshiro256starstar >::init(seed);
+        };
+    static inline Xoshiro256starstar __splitmixhelper(Splitmix64 sm64) {
+            std::array<uint64_t,4> xorseed;
+            for (unsigned int i=0; i<4;++i) {xorseed[i]=sm64.next();}
+            return Xoshiro256starstar (xorseed);
+    }
+    static inline Xoshiro256starstar get(uint64_t seed) {
+            return __splitmixhelper(splitmix64(seed));
+        };
+    static inline Xoshiro256starstar get() {
+            return __splitmixhelper(splitmix64());
+        };
+};
+Xoshiro256starstar xoshiro256starstar() {
+    return RandomGenImplInitiator<Xoshiro256starstar >::get();
+}
+Xoshiro256starstar xoshiro256starstar(uint64_t seed) {
+    return RandomGenImplInitiator<Xoshiro256starstar >::get(seed);
 }
 
 

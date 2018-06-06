@@ -1,0 +1,2 @@
+option('use_simdpp', type: 'boolean', value: 'false', description: 'Pull SIMDPP repository and enable SIMDPP flag for tests or not')
+

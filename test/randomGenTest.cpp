@@ -1,8 +1,20 @@
+
 #include "RandomGenerators.hpp" 
+
+#ifdef _USE_SIMDPP
+#define SIMDPP_ARCH_X86_SSE2 	
+#define SIMDPP_ARCH_X86_SSE3 	
+#define SIMDPP_ARCH_X86_SSSE3 
+#define SIMDPP_ARCH_X86_SSE4_1
+
+#include "simdpp/simd.h"
+#include "RandomGeneratorsSIMD.hpp" 
+#endif
 
 #include <iostream>
 #include <string>
 #include <assert.h>
+#include <typeinfo>
 
 using namespace PRNG;
 
@@ -25,7 +37,7 @@ auto vecEqual = [](const auto& vec1, const auto& vec2) {
     };
 
 int main() {
-    int seed= 120;
+    int seed= 18334;
     RandomSpacing<Xorshift1024star,true,Splitmix64> rsPersSource(seed);
     auto gen = [&](){return rsPersSource.getGenerator();};
 
@@ -47,8 +59,8 @@ int main() {
     std::cout << "randUInt32()\t" << gen().randUInt32() << std::endl;
     std::cout << "randUInt64()\t" << gen().randUInt64() << std::endl;
 
-    std::cout << "rangeRange(0,12)\t" << gen().randRange(0,12) << std::endl;
-    std::cout << "rangeRange(-1.0,2.0)\t" << gen().randRange(-1.0,2.0) << std::endl;
+    std::cout << "randRange(0,12)\t" << gen().randRange(0,12) << std::endl;
+    std::cout << "randRange(-1.0,2.0)\t" << gen().randRange(-1.0,2.0) << std::endl;
 
     int a1[10];
     gen().fill(a1,10);
@@ -89,6 +101,58 @@ int main() {
     RandomSpacing<Xorshift128plus,true,Splitmix64> rsPersSourceXorshift(seed);
     auto xorshiftGen = [&](){return rsPersSourceXorshift.getGenerator();};
     std::cout << "rand()\t\t" << xorshiftGen().rand<int>() << std::endl;
+
+    RandomSpacing<Xoshiro256starstar,true,Splitmix64> rsPersSourceXoshiroStarstar(seed);
+    auto xoshirostarstarGen = [&](){return rsPersSourceXoshiroStarstar.getGenerator();};
+    auto xoshirostarstar = xoshirostarstarGen();
+    xoshirostarstar.jump();
+    std::cout << "rand()\t1\t" << xoshirostarstar.rand<int>() << std::endl;
+    std::cout << "rand()\t2\t" << xoshirostarstar.rand<int>() << std::endl;
+    std::cout << "rand()\t3\t" << xoshirostarstar.rand<int>() << std::endl;
+
+    RandomSpacing<Xoshiro256plus,true,Splitmix64> rsPersSourceXoshiroPlus(seed);
+    auto xoshiroplusGen = [&](){return rsPersSourceXoshiroPlus.getGenerator();};
+    auto xoshiroplus = xoshiroplusGen() ;
+    xoshiroplus.jump();
+    std::cout << "rand()\t1\t" << xoshiroplus.rand<int>() << std::endl;
+    std::cout << "rand()\t2\t" << xoshiroplus.rand<int>() << std::endl;
+    std::cout << "rand()\t3\t" << xoshiroplus.rand<int>() << std::endl;
+
+#ifdef _USE_SIMDPP
+    RandomSpacing<Xoshiro256starstarSIMDPP,true,Splitmix64> rsPersSourceXoshiroStarstarSIMD(seed);
+    auto xoshirostarstarSIMDGen = [&](){return rsPersSourceXoshiroStarstarSIMD.getGenerator();};
+    auto xoshirostarstarSIMD = xoshirostarstarSIMDGen();
+    xoshirostarstarSIMD.jump();
+    std::cout << "rand()\t1\t" << xoshirostarstarSIMD.rand<int>() << std::endl;
+    std::cout << "rand()\t2\t" << xoshirostarstarSIMD.rand<int>() << std::endl;
+    std::cout << "rand()\t3\t" << xoshirostarstarSIMD.rand<int>() << std::endl;
+
+    RandomSpacing<Xoshiro256plusSIMDPP,true,Splitmix64> rsPersSourceXoshiroPlusSIMD(seed);
+    auto xoshiroplusSIMDPPGen = [&](){return rsPersSourceXoshiroPlusSIMD.getGenerator();};
+    auto xoshiroplusSIMDPP = xoshiroplusSIMDPPGen();
+    xoshiroplusSIMDPP.jump();
+    std::cout << "rand()\t1\t" << xoshiroplusSIMDPP.rand<int>() << std::endl;
+    std::cout << "rand()\t2\t" << xoshiroplusSIMDPP.rand<int>() << std::endl;
+    std::cout << "rand()\t3\t" << xoshiroplusSIMDPP.rand<int>() << std::endl;
+
+     //! SIMDPP usage
+     using namespace simdpp;
+     using VECT = int64<2>;
+     std::array<uint64_t,2> bi{3,4};
+     std::array<uint64_t,2> res;
+    
+    
+     std::cout << typeid(VECT).name() << std::endl;
+     VECT a = make_int<VECT>(1,2);
+     VECT b = load(bi.data());
+     VECT ares;
+     // This does not work
+     a = add(a,a).eval();
+     a = add(a,a).eval();
+     store(res.data(),add(a,b).eval());
+     std::cout << res[0] << std::endl;
+     std::cout << res[1] << std::endl;
+#endif
 
     return(0);
 }

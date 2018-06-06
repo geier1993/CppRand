@@ -1,0 +1,5 @@
+[wrap-git]
+directory=libsimdpp
+url=https://github.com/geier1993/libsimdpp.git
+revision=head
+

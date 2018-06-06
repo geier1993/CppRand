@@ -44,7 +44,7 @@ struct Xoroshiro128plus: public GeneratorImplementation<Xoroshiro128plus,true> {
 
     StateType s; 
 
-    StateType getState() const {
+    const StateType& getState() const {
         return s;
     }
 
@@ -68,7 +68,7 @@ struct Xoroshiro128plus: public GeneratorImplementation<Xoroshiro128plus,true> {
     /* This is the jump function for the generator. It is equivalent
        to 2^64 calls to next(); it can be used to generate 2^64
        non-overlapping subsequences for parallel computations. */
-    void jump(void) {
+    inline void jump(void) {
     	static const uint64_t JUMP[] = { 0xbeac0467eba5facb, 0xd86b048b86aa9922 };
 
     	uint64_t s0 = 0;

@@ -36,7 +36,7 @@ struct Xorshift1024star: public GeneratorImplementation<Xorshift1024star,true> {
     StateType s; 
     int p=15;
 
-    StateType getState() const {
+    const StateType& getState() const {
         return s;
     }
 

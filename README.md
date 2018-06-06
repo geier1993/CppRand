@@ -11,6 +11,7 @@ are possible.
 ```` {.bash}
 mkdir build
 meson build
+# meson build -Duse_simdpp=false # to disable simd
 cd build
 ninja test
 ````
@@ -91,3 +92,28 @@ gen6 = source4.getGenerator(); // different from gen4 and gen5
 # TODO
 
 Write tests using Catch
+
+# SIMD
+
+  * Xoshiro256starstarSIMDPP and Xoshiro256plusSIMDPP use libsimbdpp to vectorize some parts (for testing --- compiler does it better)
+  * Have to be included explicitly (`-Duse_simdpp=true` for meson)
+
+    ```
+    #ifdef _USE_SIMDPP
+    #define SIMDPP_ARCH_X86_SSE2 	
+    #define SIMDPP_ARCH_X86_SSE3 	
+    #define SIMDPP_ARCH_X86_SSSE3 
+    #define SIMDPP_ARCH_X86_SSE4_1
+    
+    #include "simdpp/simd.h"
+    #include "RandomGeneratorsSIMD.hpp" 
+    #endif
+    ```
+
+
+Other Vectorizing libraries
+
+  * http://libvolk.org/about.html
+  * https://github.com/edanor/umesimd
+  * https://github.com/VcDevel
+  * https://github.com/ddemidov/vexcl
